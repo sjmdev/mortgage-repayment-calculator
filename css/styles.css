@@ -378,7 +378,7 @@ button {
 }
 
 button::before {
-    content: url('/assets/images/icon-calculator.svg');
+    content: url('assets/images/icon-calculator.svg');
     margin-right: 1rem;
 }                                     
 
