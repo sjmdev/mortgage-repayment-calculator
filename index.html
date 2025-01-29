@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <title>Frontend Mentor | Mortgage repayment calculator</title>
+
+</head>
+<body>
+  <main class="container">
+    <div id="app" class="content">
+      <form ref="form" @submit.stop.prevent="onSubmit" class="form">
+        <div class="form-header">
+          <p class="text-preset-2 color-slate-900 bold">Mortgage Calculator</p>
+          <p class="text-preset-4 color-slate-700 link" @click="reset">Clear All</p>
+        </div>
+        <div class="field" :class="{invalid: isAmountInvalid}">
+          <p class="text-preset-4 color-slate-700">Mortgage Amount</p>
+          <div class="input-group prefix">
+            <span class="text-preset-3 color-slate-700 bold">£</span>
+            <input type="text" v-model.number="amount">
+          </div>
+        </div>
+        <div class="container-2">
+          <div class="field" :class="{invalid: isTermInvalid}">
+            <p class="text-preset-4 color-slate-700">Mortgage Term</p>
+            <div class="input-group sufix">
+              <input type="text" v-model.number="term">
+              <span class="text-preset-3 color-slate-700 bold">years</span>
+            </div>
+          </div>
+          <div class="field" :class="{invalid: isRateInvalid}">
+            <p class="text-preset-4 color-slate-700">Interest Rate</p>
+            <div class="input-group sufix">
+              <input type="text" v-model.number="rate">
+              <span class="text-preset-3 color-slate-700 bold">%</span>
+            </div>
+          </div>
+        </div>
+        <div :class="{invalid: isTypeInvalid}">
+          <p class="text-preset-4 color-slate-700">Mortgage Type</p>
+          <div class="field" class="flex column">
+            <div class="radio">
+              <input name="mortgage-type" type="radio" value="Repayment" v-model="type">
+              <label class="text-preset-3 color-slate-700 bold">Repayment</label>
+            </div>
+            <div class="radio">
+              <input name="mortgage-type" type="radio" value="Interest Only" v-model="type">
+              <label class="text-preset-3 color-slate-700 bold">Interest Only</label>
+            </div>
+          </div>
+        </div>
+        <button>Calculate Repayments</button>
+      </form>
+      <div class="result-container">
+        <div v-if="hasResult == false" class="empty">
+          <img src="/assets/images/illustration-empty.svg" alt="">
+          <p class="text-preset-2 color-white">Results shown here</p>
+          <p class="text-preset-4 color-slate-300">Complete the form and click “calculate repayments” to see
+             what your monthly repayments would be.</p>
+        </div>
+        <div v-else>
+          <div class="result-header">
+            <p class="mb-2 text-preset-2 color-white bold">Your results</p>
+            <p class="text-preset-4 color-slate-300">Your results are shown below based on the information you provided. 
+              To adjust the results, edit the form and click “calculate repayments” again.
+            </p>
+          </div>
+          <div class="calc-result">
+            <p  class="text-preset-4 color-slate-300">Your monthly repayments</p>
+            <p class="month-payment-margin text-preset-1 color-lime bold">£1,797.74</p>
+            <hr>
+            <p class="mt-3 mb-1 text-preset-4 color-slate-300">Total you'll repay over the term</p>
+            <p class="text-preset-2 color-white bold">£539,322.94</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="importmap">
+    {
+      "imports": {
+        "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { createApp, ref } from 'vue';
+
+    const app = createApp({
+      data() {
+        return {
+          hasResult: false,
+          reseted: false,
+          amount: null,
+          term: null,
+          rate: null,
+          type: null,
+          isAmountInvalid: null,
+          isTermInvalid: null,
+          isRateInvalid: null,
+          isTypeInvalid: null,
+        }
+      },
+      methods: {
+        onSubmit() {
+          this.isAmountInvalid = isNaN(parseFloat(this.amount));
+          this.isTermInvalid = isNaN(parseFloat(this.term));
+          this.isRateInvalid = isNaN(parseFloat(this.rate));
+          this.isTypeInvalid = this.type == null;
+
+          if (!this.isAmountInvalid && !this.isTermInvalid && !this.isRateInvalid && !this.isTypeInvalid) {
+            this.hasResult = true;
+          }
+        },
+        reset() {
+          this.hasResult = false;
+          this.amount = null;
+          this.isAmountInvalid = false;
+          this.term = null;
+          this.isTermInvalid = false;
+          this.rate = null;
+          this.isRateInvalid = false;
+          this.type = null;
+          this.isTypeInvalid = false;
+        },
+      },
+      watch: {
+        amount(a, b) {
+          this.isAmountInvalid = isNaN(parseFloat(this.amount));
+        },
+        term(a, b) {
+          this.isTermInvalid = isNaN(parseFloat(this.term));
+        },
+        rate(a, b) {
+          this.isRateInvalid = isNaN(parseFloat(this.rate));
+        },
+        type(a, b) {
+          this.isTypeInvalid = this.type == null;
+        },
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>
